@@ -31,8 +31,13 @@
 
     <h1>Teste WebKit PS4</h1>
 
-    <button id="crashwebkitBtn1">Crash WebKit Test 1</button>
-    <button id="crashwebkitBtn2">Crash WebKit Test 2</button>
+    <h2>Botões para crashar o WebKit</h2>
+    <button id="crashwebkit1">Crash 1 (LocalStorage)</button>
+    <button id="crashwebkit2">Crash 2 (History PushState)</button>
+    <button id="crashwebkit3">Crash 3 (Infinite iframes)</button>
+    <button id="crashwebkit4">Crash 4 (Infinite Divs)</button>
+    <button id="crashwebkit5">Crash 5 (CSS Animation Flood)</button>
+    <button id="crashwebkit6">Crash 6 (Web Workers)</button>
 
     <h3>User-Agent Atual:</h3>
     <p id="user-agent"></p>
@@ -48,16 +53,9 @@
     <textarea id="webkitTests" readonly></textarea>
 
     <script>
-document.getElementById("crashwebkitBtn2").addEventListener("onclick", () => {
-while (true) { localStorage.setItem(Math.random(), "A".repeat(10000)); }
-})
- document.getElementById("crashwebkitBtn1").addEventListener("onclick", () => {
-while(true) { history.pushState({}, '', '/'); }
-})
-        // Exibir User-Agent atual
         document.getElementById("user-agent").innerText = navigator.userAgent;
 
-        // Função para testar suporte a WebKit
+        // Teste de funcionalidades do WebKit
         function testWebKit() {
             let results = [];
             results.push("WebKit versão: " + (window.WebKitPoint ? "Suportado" : "Não suportado"));
@@ -84,7 +82,66 @@ while(true) { history.pushState({}, '', '/'); }
             frame.src = `https://www.useragents.me/?ua=${encodeURIComponent(newUA)}&url=${encodeURIComponent(url)}`;
         }
 
-        
+        // Crash 1: Armazena infinitamente no LocalStorage
+        document.getElementById("crashwebkit1").addEventListener("click", () => {
+            while (true) { localStorage.setItem(Math.random(), "A".repeat(10000)); }
+        });
+
+        // Crash 2: Altera o histórico infinitamente
+        document.getElementById("crashwebkit2").addEventListener("click", () => {
+            while(true) { history.pushState({}, '', '/'); }
+        });
+
+        // Crash 3: Cria infinitos iframes
+        document.getElementById("crashwebkit3").addEventListener("click", () => {
+            while (true) {
+                let iframe = document.createElement("iframe");
+                iframe.src = "about:blank";
+                document.body.appendChild(iframe);
+            }
+        });
+
+        // Crash 4: Cria infinitos elementos div
+        document.getElementById("crashwebkit4").addEventListener("click", () => {
+            while (true) {
+                let div = document.createElement("div");
+                document.body.appendChild(div);
+            }
+        });
+
+        // Crash 5: Inunda com animações CSS
+        document.getElementById("crashwebkit5").addEventListener("click", () => {
+            let style = document.createElement("style");
+            style.innerHTML = `
+                @keyframes crash {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                .animated {
+                    width: 100px;
+                    height: 100px;
+                    background: red;
+                    position: absolute;
+                    animation: crash 0.1s infinite linear;
+                }
+            `;
+            document.head.appendChild(style);
+
+            while (true) {
+                let div = document.createElement("div");
+                div.className = "animated";
+                document.body.appendChild(div);
+            }
+        });
+
+        // Crash 6: Cria e destrói Web Workers rapidamente
+        document.getElementById("crashwebkit6").addEventListener("click", () => {
+            while (true) {
+                let worker = new Worker(URL.createObjectURL(new Blob([""], {type: "application/javascript"})));
+                worker.terminate();
+            }
+        });
+
     </script>
 
 </body>
