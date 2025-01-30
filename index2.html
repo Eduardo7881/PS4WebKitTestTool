@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exploit WebKit PS4</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+        button {
+            margin: 10px;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+            background-color: red;
+            color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Testes e Exploits WebKit para PS4</h1>
+
+    <button id="exploit1">Crash WebAssembly</button>
+    <button id="exploit2">Use-After-Free com `Intl.NumberFormat`</button>
+    <button id="exploit3">ArrayBuffer Overflow</button>
+    <button id="exploit4">Loop infinito com `document.write`</button>
+    <button id="exploit5">Shadow DOM Massivo</button>
+
+    <script>
+        // Exploit 1 - Crash com WebAssembly (Corrupção de Memória)
+        document.getElementById("exploit1").addEventListener("click", () => {
+            let wasmCode = new Uint8Array([
+                0x00, 0x61, 0x73, 0x6D, 0x01, 0x00, 0x00, 0x00, 0x01, 0x04, 0x01, 0x60, 
+                0x00, 0x00, 0x03, 0x02, 0x01, 0x00, 0x07, 0x07, 0x01, 0x03, 0x66, 0x6E, 
+                0x30, 0x00, 0x00, 0x0A, 0x07, 0x01, 0x05, 0x00, 0x41, 0x7F, 0x0B
+            ]);
+            let wasmModule = new WebAssembly.Module(wasmCode);
+            let instance = new WebAssembly.Instance(wasmModule);
+            while (true) instance.exports.fn0();
+        });
+
+        // Exploit 2 - Use-After-Free com `Intl.NumberFormat`
+        document.getElementById("exploit2").addEventListener("click", () => {
+            function triggerUAF() {
+                let obj = new Intl.NumberFormat();
+                obj.format = null;
+                delete obj.format;
+                obj.format(1337);
+            }
+            while (true) triggerUAF();
+        });
+
+        // Exploit 3 - ArrayBuffer Overflow
+        document.getElementById("exploit3").addEventListener("click", () => {
+            let buffer = new ArrayBuffer(1024);
+            let view = new DataView(buffer);
+            while (true) {
+                view.setFloat64(0, 1.7976931348623157e+308, true);
+            }
+        });
+
+        // Exploit 4 - Loop infinito com `document.write`
+        document.getElementById("exploit4").addEventListener("click", () => {
+            while (true) {
+                document.write("<script>console.log('bugando')</script>");
+            }
+        });
+
+        // Exploit 5 - Shadow DOM Massivo
+        document.getElementById("exploit5").addEventListener("click", () => {
+            while (true) {
+                let el = document.createElement("div");
+                let shadow = el.attachShadow({ mode: "open" });
+                shadow.innerHTML = "<p>Exploit</p>";
+                document.body.appendChild(el);
+            }
+        });
+
+    </script>
+
+</body>
+</html>
