@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste WebKit PS4</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+        textarea {
+            width: 90%;
+            height: 100px;
+        }
+        iframe {
+            width: 90%;
+            height: 400px;
+            border: 1px solid white;
+        }
+        button {
+            margin: 10px;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Teste WebKit PS4</h1>
+
+    <button id="crashwebkitBtn1">Crash WebKit Test 1</button>
+    <button id="crashwebkitBtn2">Crash WebKit Test 2</button>
+
+    <h3>User-Agent Atual:</h3>
+    <p id="user-agent"></p>
+
+    <h3>Definir User-Agent Personalizado para o iFrame:</h3>
+    <input type="text" id="newUserAgent" placeholder="Novo User-Agent">
+    <button onclick="changeUserAgent()">Aplicar</button>
+
+    <h3>iFrame (YouTube)</h3>
+    <iframe id="webFrame" src="https://www.youtube.com" sandbox="allow-scripts allow-same-origin"></iframe>
+
+    <h3>Testes de WebKit</h3>
+    <textarea id="webkitTests" readonly></textarea>
+
+    <script>
+document.getElementById("crashwebkitBtn2").addEventListener("onclick", () => {
+while (true) { localStorage.setItem(Math.random(), "A".repeat(10000)); }
+})
+ document.getElementById("crashwebkitBtn1").addEventListener("onclick", () => {
+while(true) { history.pushState({}, '', '/'); }
+})
+        // Exibir User-Agent atual
+        document.getElementById("user-agent").innerText = navigator.userAgent;
+
+        // Função para testar suporte a WebKit
+        function testWebKit() {
+            let results = [];
+            results.push("WebKit versão: " + (window.WebKitPoint ? "Suportado" : "Não suportado"));
+            results.push("WebGL: " + (window.WebGLRenderingContext ? "Suportado" : "Não suportado"));
+            results.push("IndexedDB: " + (window.indexedDB ? "Suportado" : "Não suportado"));
+            results.push("Service Workers: " + (navigator.serviceWorker ? "Suportado" : "Não suportado"));
+            results.push("WebRTC: " + (navigator.mediaDevices ? "Suportado" : "Não suportado"));
+            results.push("ES6 Arrow Functions: " + (typeof (() => {}) === "function" ? "Suportado" : "Não suportado"));
+            results.push("LocalStorage: " + (window.localStorage ? "Suportado" : "Não suportado"));
+            results.push("Canvas 2D: " + (document.createElement("canvas").getContext ? "Suportado" : "Não suportado"));
+            results.push("CSS Grid: " + (CSS.supports("display", "grid") ? "Suportado" : "Não suportado"));
+
+            document.getElementById("webkitTests").value = results.join("\n");
+        }
+
+        testWebKit();
+
+        // Trocar User-Agent do iframe (simulado, pois o JS não pode mudar diretamente)
+        function changeUserAgent() {
+            let newUA = document.getElementById("newUserAgent").value;
+            let frame = document.getElementById("webFrame");
+            let url = "https://www.youtube.com"; // Página padrão
+
+            frame.src = `https://www.useragents.me/?ua=${encodeURIComponent(newUA)}&url=${encodeURIComponent(url)}`;
+        }
+
+        
+    </script>
+
+</body>
+</html>
