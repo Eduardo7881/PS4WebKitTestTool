@@ -32,8 +32,8 @@
     <h1>Teste WebKit PS4</h1>
 
     <h2>Botões para crashar o WebKit</h2>
-    <button id="crashwebkit1">Crash 1 (LocalStorage)</button>
-    <button id="crashwebkit2">Crash 2 (History PushState)</button>
+    <button id="crashwebkit1">Crash 1 (Canvas Crash)</button>
+    <button id="crashwebkit2">Crash 2 (ClipPath Overflow)</button>
     <button id="crashwebkit3">Crash 3 (Infinite iframes)</button>
     <button id="crashwebkit4">Crash 4 (Infinite Divs)</button>
     <button id="crashwebkit5">Crash 5 (CSS Animation Flood)</button>
@@ -82,15 +82,26 @@
             frame.src = `https://www.useragents.me/?ua=${encodeURIComponent(newUA)}&url=${encodeURIComponent(url)}`;
         }
 
-        // Crash 1: Armazena infinitamente no LocalStorage
+        // Crash 1: Canvas rendering
         document.getElementById("crashwebkit1").addEventListener("click", () => {
-            while (true) { localStorage.setItem(Math.random(), "A".repeat(10000)); }
-        });
+    let canvas = document.createElement("canvas");
+    let ctx = canvas.getContext("2d");
+    document.body.appendChild(canvas);
+    
+    while (true) {
+        ctx.fillStyle = `rgb(${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255})`;
+        ctx.fillRect(Math.random() * 1000, Math.random() * 1000, 10000, 10000);
+    }
+});
 
-        // Crash 2: Altera o histórico infinitamente
+        // Crash 2: Clip path overflow
         document.getElementById("crashwebkit2").addEventListener("click", () => {
-            while(true) { history.pushState({}, '', '/'); }
-        });
+    while (true) {
+        let div = document.createElement("div");
+        div.style.clipPath = `polygon(${Math.random()}% ${Math.random()}%)`;
+        document.body.appendChild(div);
+    }
+});
 
         // Crash 3: Cria infinitos iframes
         document.getElementById("crashwebkit3").addEventListener("click", () => {
